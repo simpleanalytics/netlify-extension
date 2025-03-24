@@ -1,0 +1,8 @@
+{
+  "deno.enable": true,
+  "deno.enablePaths": [
+    "src/edge-functions"
+  ],
+  "deno.unstable": true,
+  "deno.path": "/Users/jean/Library/Preferences/netlify/deno-cli/deno"
+}

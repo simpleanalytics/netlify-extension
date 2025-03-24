@@ -1,0 +1,46 @@
+{
+  "name": "simpleanalytics",
+  "version": "0.0.1",
+  "license": "UNLICENSED",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "netlify-extension build",
+    "dev": "netlify-extension dev",
+    "dev:open": "netlify-extension dev --open"
+  },
+  "dependencies": {
+    "@netlify/functions": "^3.0.4",
+    "@netlify/sdk": "^2.25.3",
+    "@tanstack/react-query": "^5.69.0",
+    "@trpc/client": "11.0.0-rc.477",
+    "@trpc/react-query": "11.0.0-rc.477",
+    "@trpc/server": "11.0.0-rc.477",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "19.x",
+      "react-dom": "19.x",
+      "@types/react": "19.x",
+      "@types/react-dom": "19.x"
+    }
+  },
+  "devDependencies": {
+    "@netlify/netlify-plugin-netlify-extension": "^1.2.1",
+    "@tsconfig/node18": "^18.2.4",
+    "@tsconfig/recommended": "^1.0.8",
+    "@tsconfig/strictest": "^2.0.5",
+    "@tsconfig/vite-react": "^3.4.0",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
+    "netlify-cli": "^19.0.3",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.3"
+  }
+}
