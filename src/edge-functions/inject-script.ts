@@ -16,7 +16,9 @@ function createScript() {
     "data-strict-utm": Netlify.env.get("SIMPLE_ANALYTICS_STRICT_UTM"),
   };
 
-  const configString = Object.entries(config).filter(([_, value]) => value !== "").map(([key, value]) => `${key}="${value}"`).join(" ");
+  const configString = Object.entries(config)
+    .filter(([_, value]) => value !== undefined)
+    .map(([key, value]) => `${key}="${value}"`).join(" ");
 
   return `<script src="https://scripts.simpleanalyticscdn.com/latest.js" ${configString}></script>`;
 }
