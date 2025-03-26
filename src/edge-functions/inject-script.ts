@@ -20,7 +20,7 @@ function createScript() {
     .filter(([_, value]) => value !== undefined)
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
-  return `<script src="https://scripts.simpleanalyticscdn.com/latest.js" ${configString}></script>`;
+  return `<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${configString}></script>`;
 }
 
 export default async function handler(request: Request, context: Context) {
