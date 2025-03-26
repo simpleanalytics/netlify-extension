@@ -24,6 +24,10 @@ function createScript() {
 export default async function handler(request: Request, context: Context) {
   const response = await context.next();
 
+  if (!response.headers.get("Content-Type")?.includes("text/html")) {
+    return response;
+  }
+
   const rewriter = new HTMLRewriter()
     .on("body", {
       element(element) {
