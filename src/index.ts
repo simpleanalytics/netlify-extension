@@ -4,7 +4,7 @@ import { NetlifyExtension } from "@netlify/sdk";
 const extension = new NetlifyExtension();
 
 extension.addEdgeFunctions("./src/edge-functions", {
-  prefix: "ef_prefix",
+  prefix: "sa_plugin",
   shouldInjectFunction: () => {
     // // If the edge function is not enabled, return early
     // if (!process.env["SIMPLE_ANALYTICS_ENABLED"]) {
