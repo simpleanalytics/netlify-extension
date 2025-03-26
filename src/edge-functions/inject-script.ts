@@ -1,6 +1,6 @@
 // Documentation: https://sdk.netlify.com/docs
 
-import type { Context } from "@netlify/edge-functions";
+import type { Config, Context } from "@netlify/edge-functions";
 import { HTMLRewriter } from "https://ghuc.cc/worker-tools/html-rewriter/index.ts";
 
 function createScript() {
@@ -36,3 +36,7 @@ export default async function handler(request: Request, context: Context) {
 
   return rewriter.transform(response);
 }
+
+export const config: Config = {
+  path: "/*",
+};
