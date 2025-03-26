@@ -1,2 +1,1 @@
-# View and install the simpleanalytics extension.
-![Netlify Logo](/assets/netlify-logo.png)
+# View and install the Simple Analytics extension.
