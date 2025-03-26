@@ -20,6 +20,10 @@ function createScript() {
     .filter(([_, value]) => value !== undefined)
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
+  if (Netlify.env.get("SIMPLE_ANALYTICS_PROXY_ENABLED")) {
+    return `<script async src="/proxy.js" ${configString}></script>`;
+  }
+
   return `<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${configString}></script>`;
 }
 
