@@ -10,7 +10,7 @@ import {
 } from "@netlify/sdk/ui/react/components";
 import { useNetlifySDK } from "@netlify/sdk/ui/react";
 import { trpc } from "../trpc";
-import { teamSettingsSchema } from "../../schema/team-configuration";
+import { teamSettingsSchema } from "../../schema/settings";
 import logoImg from "../../assets/netlify-logo.png";
 
 export const TeamConfiguration = () => {

@@ -4,7 +4,7 @@ import { Surfaces, useNetlifyExtensionUIFetch } from "@netlify/sdk/ui/react";
 import { SurfaceRouter, SurfaceRoute } from "@netlify/sdk/ui/react/components";
 import { useState } from "react";
 import { SiteConfiguration } from "./surfaces/SiteConfiguration.jsx";
-import { TeamConfiguration } from "./surfaces/TeamConfiguration.jsx";
+// import { TeamConfiguration } from "./surfaces/TeamConfiguration.jsx";
 
 
 import { trpc } from "./trpc.js";
@@ -30,10 +30,10 @@ export const App = () => {
           <SurfaceRoute surface={Surfaces.SiteConfiguration}>
             <SiteConfiguration />
           </SurfaceRoute>
-
+          {/* 
           <SurfaceRoute surface={Surfaces.TeamConfiguration}>
             <TeamConfiguration />
-          </SurfaceRoute>
+          </SurfaceRoute> */}
           
           
         </SurfaceRouter>
