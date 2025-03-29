@@ -9,20 +9,16 @@ import {
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { 
-  doNotTrackSettingSchema, 
-  ignorePagesSettingSchema,
-  overwriteDomainSettingSchema,
-  hashModeSettingSchema,
-  collectPageViewsSettingSchema,
   siteSettingsSchema,
+  advancedSettingsSchema,
 } from "../../schema/settings";
 
-function DoNotTrackSettings() {
+function AdvancedSettings() {
   const trpcUtils = trpc.useUtils();
-  const query = trpc.siteSettings.doNotTrack.query.useQuery();
-  const mutation = trpc.siteSettings.doNotTrack.mutate.useMutation({
+  const query = trpc.siteSettings.advanced.query.useQuery();
+  const mutation = trpc.siteSettings.advanced.mutate.useMutation({
     onSuccess: async () => {
-      await trpcUtils.siteSettings.doNotTrack.query.invalidate();
+      await trpcUtils.siteSettings.advanced.query.invalidate();
     },
   });
 
@@ -32,179 +28,40 @@ function DoNotTrackSettings() {
 
   return (
     <Card>
-      <CardTitle>DoNotTrack visits</CardTitle>
-      <p>
-        The Do Not Track setting requests that a web application disables
-        either its tracking or cross-site user tracking of an individual user.
-        We don't do that ever, so you can select to collect those visits as
-        well.
-      </p>
+      <CardTitle>Advanced Settings</CardTitle>
       <Form
-          defaultValues={
-            query.data ?? {
-              enabled: false,
-            }
-          }
-          schema={doNotTrackSettingSchema}
-          onSubmit={mutation.mutateAsync}
-        >
-          <Checkbox name="enabled" label="Collect DoNotTrack visits" />
-      </Form>
-    </Card>
-  );
-}
-
-function IgnorePagesSettings() {
-  const trpcUtils = trpc.useUtils();
-  const query = trpc.siteSettings.ignorePages.query.useQuery();
-  const mutation = trpc.siteSettings.ignorePages.mutate.useMutation({
-    onSuccess: async () => {
-      await trpcUtils.siteSettings.ignorePages.query.invalidate();
-    },
-  });
-
-  if (query.isLoading) {
-    return <CardLoader />;
-  }
-
-  return (
-    <Card>
-      <CardTitle>Ignore pages</CardTitle>
-      <p>
-        Not want to run Simple Analytics on certain pages? Enter them here.
-        You can use asterisks (*) to specify multiple pages.
-      </p>
-      <p>
-        Example: /page1,/page2,/admin/*
-      </p>
-      <Form 
-        defaultValues={
-          query.data ?? {
-            pages: "",
-          }
-        }
-        schema={ignorePagesSettingSchema}
+        defaultValues={query.data ?? {
+          collectDoNotTrack: false,
+          collectPageViews: false,
+          ignoredPages: "",
+          overwriteDomain: "",
+          hashMode: false,
+        }}
+        schema={advancedSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
+        <Checkbox name="collectDoNotTrack" label="Collect DNT visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well." />
+
+        <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection." />
+
         <FormField
-          name="pages"
+          name="ignoredPages"
           type="text"
           label="Ignore pages"
-          placeholder="Enter pages or leave empty..."
+          helpText="Not want to run Simple Analytics on certain pages? Enter them here. You can use asterisks (*) to specify multiple pages, example: /page1,/page2,/admin/*"
         />
-      </Form>
-    </Card>
-  );
-}
 
-function OverwriteDomainSettings() {
-  const trpcUtils = trpc.useUtils();
-  const query = trpc.siteSettings.overwriteDomain.query.useQuery();
-  const mutation = trpc.siteSettings.overwriteDomain.mutate.useMutation({
-    onSuccess: async () => {
-      await trpcUtils.siteSettings.overwriteDomain.query.invalidate();
-    },
-  });
-
-  if (query.isLoading) {
-    return <CardLoader />;
-  }
-
-  return (
-    <Card>
-      <CardTitle>Overwrite domain</CardTitle>
-      <p>
-        Are you running your website on a different domain than what is listed
-        in Simple Analytics? Overwrite your domain name here.
-      </p>
-      <Form 
-        defaultValues={
-          query.data ?? {
-            domain: "",
-          }
-        }
-        schema={overwriteDomainSettingSchema}
-        onSubmit={mutation.mutateAsync}
-      >
         <FormField
-          name="domain"
+          name="overwriteDomain"
           type="text"
-          label="Domain"
-          placeholder="Enter domain or leave empty..."
+          label="Overwrite domain"
+          helpText="Are you running your website on a different domain than what is listed in Simple Analytics? Overwrite your domain name here."
         />
-      </Form>
-    </Card>
-  );
-}
 
-function HashModeSettings() {
-  const trpcUtils = trpc.useUtils();
-  const query = trpc.siteSettings.hashMode.query.useQuery();
-  const mutation = trpc.siteSettings.hashMode.mutate.useMutation({
-    onSuccess: async () => {
-      await trpcUtils.siteSettings.hashMode.query.invalidate();
-    },
-  });
-
-  if (query.isLoading) {
-    return <CardLoader />;
-  }
-
-  return (
-    <Card>
-      <CardTitle>Hash mode</CardTitle>
-      <p>
-        Enable hash mode to track URLs with hashes as separate page views.
-      </p>
-      <Form 
-        defaultValues={
-          query.data ?? {
-            enabled: false,
-          }
-        }
-        schema={hashModeSettingSchema}
-        onSubmit={mutation.mutateAsync}
-      >
         <Checkbox
-          name="enabled"
+          name="hashMode"
           label="Enable hash mode"
-        />
-      </Form>
-    </Card>
-  );
-}
-
-function CollectPageViewsSettings() {
-  const trpcUtils = trpc.useUtils();
-  const query = trpc.siteSettings.collectPageViews.query.useQuery();
-  const mutation = trpc.siteSettings.collectPageViews.mutate.useMutation({
-    onSuccess: async () => {
-      await trpcUtils.siteSettings.collectPageViews.query.invalidate();
-    },
-  });
-
-  if (query.isLoading) {
-    return <CardLoader />;
-  }
-
-  return (
-    <Card>
-      <CardTitle>Collect page views</CardTitle>
-      <p>
-        Enable or disable page view collection.
-      </p>
-      <Form 
-        defaultValues={
-          query.data ?? {
-            enabled: true,
-          }
-        }
-        schema={collectPageViewsSettingSchema}
-        onSubmit={mutation.mutateAsync}
-      >
-        <Checkbox
-          name="enabled"
-          label="Collect page views"
+          helpText="Enable hash mode to track URLs with hashes as separate page views."
         />
       </Form>
     </Card>
@@ -228,7 +85,7 @@ function GeneralSettings() {
     <Card>
       <CardTitle>General</CardTitle>
       <p>
-        Enable or disable Simple Analytics for this site.
+        Enable Simple Analytics for this site.
       </p>
       <Form 
         defaultValues={
@@ -241,7 +98,7 @@ function GeneralSettings() {
       >
         <Checkbox
           name="enabled"
-          label="Enable Simple Analytics"
+          label="Enable analytics"
         />
       </Form>
     </Card>
@@ -249,17 +106,11 @@ function GeneralSettings() {
 }
 
 export function SiteConfiguration() {
-  
-
   return (
     <SiteConfigurationSurface>
       <div className="space-y-6">
         <GeneralSettings />
-        <DoNotTrackSettings />
-        <IgnorePagesSettings />
-        <OverwriteDomainSettings />
-        <HashModeSettings />
-        <CollectPageViewsSettings />
+        <AdvancedSettings />
       </div>
     </SiteConfigurationSurface>
   );

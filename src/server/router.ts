@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { procedure, router } from "./trpc.js";
-import { doNotTrackSettingSchema, siteSettingsSchema, teamSettingsSchema, ignorePagesSettingSchema, overwriteDomainSettingSchema, hashModeSettingSchema, collectPageViewsSettingSchema } from "../schema/settings.js";
+import { siteSettingsSchema, teamSettingsSchema, advancedSettingsSchema } from "../schema/settings.js";
 
 export const appRouter = router({
   teamSettings: {
@@ -123,7 +123,7 @@ export const appRouter = router({
             }
           }),
     },
-    doNotTrack: {
+    advanced: {
       query: procedure.query(async ({ ctx: { teamId, siteId, client } }) => {
         if (!teamId) {
           throw new TRPCError({
@@ -144,12 +144,23 @@ export const appRouter = router({
           siteId,
         });
     
-        const doNotTrackSetting = variables.find(v => v.key === "SIMPLE_ANALYTICS_COLLECT_DNT");
-
-        return { enabled: !!doNotTrackSetting };
+        // Get all relevant variables
+        const collectDoNotTrack = variables.find(v => v.key === "SIMPLE_ANALYTICS_COLLECT_DNT")?.values?.[0]?.value;
+        const collectPageViews = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT")?.values?.[0]?.value;
+        const ignoredPages = variables.find(v => v.key === "SIMPLE_ANALYTICS_IGNORE_PAGES")?.values?.[0]?.value;
+        const domain = variables.find(v => v.key === "SIMPLE_ANALYTICS_HOSTNAME")?.values?.[0]?.value;
+        const mode = variables.find(v => v.key === "SIMPLE_ANALYTICS_MODE")?.values?.[0]?.value;
+        
+        return { 
+          doNotTrack: collectDoNotTrack === "true",
+          collectPageViews: collectPageViews === "false" ? false : true,
+          ignoredPages: ignoredPages ?? "",
+          overwriteDomain: domain ?? "",
+          hashMode: mode === "hash"
+        };
       }),
       mutate: procedure
-        .input(doNotTrackSettingSchema)
+        .input(advancedSettingsSchema)
         .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
           if (!teamId) {
             throw new TRPCError({
@@ -157,309 +168,93 @@ export const appRouter = router({
               message: "teamId is required",
             });
           }
-    
+  
           if (!siteId) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "siteId is required",
             });
           }
-    
+  
           try {
-            if (!input.enabled) {
+            if (!input.collectDoNotTrack) {
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
                 key: "SIMPLE_ANALYTICS_COLLECT_DNT",
               });
-              return;
-            }
-    
-            await client.createOrUpdateVariable({
-              accountId: teamId,
-              siteId,
-              key: "SIMPLE_ANALYTICS_COLLECT_DNT",
-              value: "1",
-            });
-          } catch (e) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to save team configuration",
-              cause: e,
-            });
-          }
-        }),
-    },
-    ignorePages: {
-      query: procedure.query(async ({ ctx: { teamId, siteId, client } }) => {
-        if (!teamId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "teamId is required",
-          });
-        }
-    
-        if (!siteId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "siteId is required",
-          });
-        }
-    
-        const variables = await client.getEnvironmentVariables({
-          accountId: teamId,
-          siteId,
-        });
-    
-        const ignorePagesVar = variables.find(v => v.key === "SIMPLE_ANALYTICS_IGNORE_PAGES");
-        const value = ignorePagesVar?.values?.[0]?.value;
-        
-        return { pages: value ?? "" };
-      }),
-      mutate: procedure
-        .input(ignorePagesSettingSchema)
-        .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
-          if (!teamId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "teamId is required",
-            });
-          }
-  
-          if (!siteId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "siteId is required",
-            });
-          }
-  
-          try {
-            if (input.pages === "") {
-              await client.deleteEnvironmentVariable({
+            } else {
+              await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_IGNORE_PAGES",
+                key: "SIMPLE_ANALYTICS_COLLECT_DNT",
+                value: "true",
               });
-
-              return;
             }
-  
-            await client.createOrUpdateVariable({
-              accountId: teamId,
-              siteId,
-              key: "SIMPLE_ANALYTICS_IGNORE_PAGES",
-              value: input.pages,
-            });
-          } catch (e) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to save ignore pages configuration",
-              cause: e,
-            });
-          }
-        }),
-    },
-    overwriteDomain: {
-      query: procedure.query(async ({ ctx: { teamId, siteId, client } }) => {
-        if (!teamId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "teamId is required",
-          });
-        }
-    
-        if (!siteId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "siteId is required",
-          });
-        }
-    
-        const variables = await client.getEnvironmentVariables({
-          accountId: teamId,
-          siteId,
-        });
-    
-        const variable = variables.find(v => v.key === "SIMPLE_ANALYTICS_HOSTNAME");
-        const value = variable?.values?.[0]?.value;
 
-        return { domain: value ?? "" };
-      }),
-      mutate: procedure
-        .input(overwriteDomainSettingSchema)
-        .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
-          if (!teamId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "teamId is required",
-            });
-          }
-  
-          if (!siteId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "siteId is required",
-            });
-          }
-  
-          try {
-            if (input.domain === "") {
-              await client.deleteEnvironmentVariable({
-                accountId: teamId,
-                siteId,
-                key: "SIMPLE_ANALYTICS_HOSTNAME",
-              });
-
-              return;
-            }
-  
-            await client.createOrUpdateVariable({
-              accountId: teamId,
-              siteId,
-              key: "SIMPLE_ANALYTICS_HOSTNAME",
-              value: input.domain,
-            });
-          } catch (e) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to save domain configuration",
-              cause: e,
-            });
-          }
-        }),
-    },
-    hashMode: {
-      query: procedure.query(async ({ ctx: { teamId, siteId, client } }) => {
-        if (!teamId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "teamId is required",
-          });
-        }
-    
-        if (!siteId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "siteId is required",
-          });
-        }
-    
-        const variables = await client.getEnvironmentVariables({
-          accountId: teamId,
-          siteId,
-        });
-    
-        const variable = variables.find(v => v.key === "SIMPLE_ANALYTICS_MODE");
-        const value = variable?.values?.[0]?.value;
-        
-        return { enabled: value === "hash" };
-      }),
-      mutate: procedure
-        .input(hashModeSettingSchema)
-        .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
-          if (!teamId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "teamId is required",
-            });
-          }
-  
-          if (!siteId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "siteId is required",
-            });
-          }
-  
-          try {
-            if (!input.enabled) {
-              await client.deleteEnvironmentVariable({
-                accountId: teamId,
-                siteId,
-                key: "SIMPLE_ANALYTICS_MODE",
-              });
-              return;
-            }
-  
-            await client.createOrUpdateVariable({
-              accountId: teamId,
-              siteId,
-              key: "SIMPLE_ANALYTICS_MODE",
-              value: "hash",
-            });
-          } catch (e) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to save hash mode configuration",
-              cause: e,
-            });
-          }
-        }),
-    },
-    collectPageViews: {
-      query: procedure.query(async ({ ctx: { teamId, siteId, client } }) => {
-        if (!teamId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "teamId is required",
-          });
-        }
-    
-        if (!siteId) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "siteId is required",
-          });
-        }
-    
-        const variables = await client.getEnvironmentVariables({
-          accountId: teamId,
-          siteId,
-        });
-    
-        const variable = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT");
-        const value = variable?.values?.[0]?.value;
-
-        return { enabled: value ? value === "true" : true };
-      }),
-      mutate: procedure
-        .input(collectPageViewsSettingSchema)
-        .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
-          if (!teamId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "teamId is required",
-            });
-          }
-  
-          if (!siteId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "siteId is required",
-            });
-          }
-  
-          try {
-            if (input.enabled) {
+            if (input.collectPageViews) {
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
                 key: "SIMPLE_ANALYTICS_AUTO_COLLECT",
               });
-
-              return;
+            } else {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_AUTO_COLLECT",
+                value: "false",
+              });
             }
-  
-            await client.createOrUpdateVariable({
-              accountId: teamId,
-              siteId,
-              key: "SIMPLE_ANALYTICS_AUTO_COLLECT",
-              value: "false",
-            });
+
+            if (input.ignoredPages === "") {
+              await client.deleteEnvironmentVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_IGNORE_PAGES",
+              });
+            } else {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_IGNORE_PAGES",
+                value: input.ignoredPages,
+              });
+            }
+
+            if (input.overwriteDomain === "") {
+              await client.deleteEnvironmentVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_HOSTNAME",
+              });
+            } else {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_HOSTNAME",
+                value: input.overwriteDomain,
+              });
+            }
+
+            if (!input.hashMode) {
+              await client.deleteEnvironmentVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_MODE",
+              });
+            } else {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_MODE",
+                value: "hash",
+              });
+            }
           } catch (e) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to save page views collection configuration",
+              message: "Failed to save advanced settings",
               cause: e,
             });
           }
