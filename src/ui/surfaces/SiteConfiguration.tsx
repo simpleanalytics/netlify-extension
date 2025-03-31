@@ -195,11 +195,9 @@ function GeneralSettings() {
 export function SiteConfiguration() {
   return (
     <SiteConfigurationSurface>
-      <div className="space-y-6">
-        <GeneralSettings />
-        <AdvancedSettings />
-        <EventSettings />
-      </div>
+      <GeneralSettings />
+      <AdvancedSettings />
+      <EventSettings />
     </SiteConfigurationSurface>
   );
 }
