@@ -32,7 +32,7 @@ function AdvancedSettings() {
     <Card>
       <CardTitle>Advanced Settings</CardTitle>
       <Form
-        className="pt-6"
+        className="tw-pt-6"
         defaultValues={query.data ?? {
           collectDoNotTrack: false,
           collectPageViews: false,
@@ -88,7 +88,7 @@ function EventSettings() {
     <Card>
       <CardTitle>Events Settings</CardTitle>
       <Form
-        className="pt-6"
+        className="tw-pt-6"
         defaultValues={query.data ?? {
           collectAutomatedEvents: false,
           collectDownloads: false,
@@ -152,18 +152,26 @@ function GeneralSettings() {
       <p>
         Enable Simple Analytics for this site.
       </p>
-      <Form 
+      <Form
+        className="tw-pt-6"
         defaultValues={
           query.data ?? {
-            enabled: true,
+            collectAutomatedEvents: true,
+            customDomain: "",
           }
         }
         schema={siteSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
-        <Checkbox
-          name="enabled"
-          label="Enable analytics"
+        <Checkbox name="collectAutomatedEvents" 
+          label="Collect automated events"
+          helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com" />
+
+        <FormField
+          name="customDomain"
+          type="text"
+          label="Custom domain"
+          helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty."
         />
       </Form>
     </Card>

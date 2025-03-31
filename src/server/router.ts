@@ -77,8 +77,9 @@ export const appRouter = router({
         });
     
         const collectAutomatedEvents = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS")?.values?.[0]?.value;
+        const customDomain = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN")?.values?.[0]?.value;
   
-        return { enabled: collectAutomatedEvents !== "false" };
+        return { collectAutomatedEvents: collectAutomatedEvents !== "false", customDomain: customDomain ?? "" };
       }),
       mutate: procedure
           .input(siteSettingsSchema)
@@ -104,15 +105,31 @@ export const appRouter = router({
                   siteId,
                   key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
                 });
-                return;
               }
-      
-              await client.createOrUpdateVariable({
-                accountId: teamId,
-                siteId,
-                key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
-                value: "false",
-              });
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
+                  value: "false",
+                });
+              }
+
+              if (!input.customDomain) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
+                  value: input.customDomain,
+                });
+              }
             } catch (e) {
               throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",

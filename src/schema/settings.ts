@@ -10,7 +10,6 @@ export const teamSettingsSchema = z.object({
 export type TeamSettings = z.infer<typeof teamSettingsSchema>;
 
 export const siteSettingsSchema = z.object({
-  enabled: z.boolean(),
   collectAutomatedEvents: z.boolean(),
   customDomain: z.string().trim(),
 });
