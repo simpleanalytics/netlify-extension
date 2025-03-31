@@ -10,30 +10,28 @@ function createScript() {
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
   const eventsConfig = Object.entries(Netlify.env.toObject())
-    .filter(([key]) => key.startsWith("SIMPLE_ANALYTICS_EVENTS_DATA_"))
-    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_EVENTS_", "").replaceAll("_", "-").toLowerCase(), value])
+    .filter(([key]) => key.startsWith("SIMPLE_ANALYTICS_EVENT_DATA_"))
+    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_EVENT_", "").replaceAll("_", "-").toLowerCase(), value])
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
   const isAutomatedEventsEnabled = Netlify.env.get("SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS") !== "false";
-  
-  const config = isAutomatedEventsEnabled ? scriptConfig : `${scriptConfig} ${eventsConfig}`;
 
   const scripts: string[] = [];
 
   if (Netlify.env.get("SIMPLE_ANALYTICS_PROXY_ENABLED") === "true") {
-    scripts.push(`<script async src="/proxy.js" ${config}></script>`);
+    scripts.push(`<script async src="/proxy.js" ${scriptConfig}></script>`);
 
     if (isAutomatedEventsEnabled) {
-      scripts.push(`<script async src="/auto-events.js"></script>`);
+      scripts.push(`<script async src="/auto-events.js" ${eventsConfig}></script>`);
     }
 
     return scripts;
   }
 
-  scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${config}></script>`);
+  scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${scriptConfig}></script>`);
 
   if (isAutomatedEventsEnabled) {
-    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/auto-events.js"></script>`);
+    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/auto-events.js" ${eventsConfig}></script>`);
   }
 
   return scripts;
