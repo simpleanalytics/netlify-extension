@@ -3,7 +3,6 @@ import {
   CardLoader,
   CardTitle,
   Checkbox,
-  cn,
   Form,
   FormField,
   SiteConfigurationSurface,
@@ -34,15 +33,23 @@ function AdvancedSettings() {
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
+          customDomain: "", // default = undefined
           collectDoNotTrack: false,
-          collectPageViews: false,
-          ignoredPages: "",
-          overwriteDomain: "",
+          collectPageViews: true,
+          ignoredPages: "", // default = undefined
+          overwriteDomain: "", // default = undefined
           hashMode: false,
         }}
         schema={advancedSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
+        <FormField
+          name="customDomain"
+          type="text"
+          label="Custom domain"
+          helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty."
+        />
+
         <Checkbox name="collectDoNotTrack" label="Collect DNT visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well." />
 
         <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection." />
@@ -90,11 +97,11 @@ function EventSettings() {
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
-          collectAutomatedEvents: false,
+          collectAutomatedEvents: true,
           collectDownloads: false,
           collectEmailClicks: false,
           collectOutboundLinks: false,
-          downloadExtensions: "",
+          downloadExtensions: "", // default = undefined
           useTitle: false,
           fullUrls: false,
         }}
@@ -170,8 +177,8 @@ function GeneralSettings() {
         className="tw-pt-6 tw-max-w-170"
         defaultValues={
           query.data ?? {
+            enableProxy: false,
             collectAutomatedEvents: true,
-            customDomain: "",
           }
         }
         schema={siteSettingsSchema}
@@ -181,11 +188,10 @@ function GeneralSettings() {
           label="Collect automated events"
           helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com" />
 
-        <FormField
-          name="customDomain"
-          type="text"
-          label="Custom domain"
-          helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty."
+        <Checkbox
+          name="enableProxy"
+          label="Enable analytics proxy"
+          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extentions."
         />
       </Form>
     </Card>

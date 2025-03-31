@@ -10,13 +10,14 @@ export const teamSettingsSchema = z.object({
 export type TeamSettings = z.infer<typeof teamSettingsSchema>;
 
 export const siteSettingsSchema = z.object({
+  enableProxy: z.boolean(),
   collectAutomatedEvents: z.boolean(),
-  customDomain: z.string().trim(),
 });
 
 export type SiteSettings = z.infer<typeof siteSettingsSchema>;
 
 export const advancedSettingsSchema = z.object({
+  customDomain: z.string().trim(),
   collectDoNotTrack: z.boolean(),
   collectPageViews: z.boolean(),
   ignoredPages: z.string().trim(),

@@ -77,9 +77,9 @@ export const appRouter = router({
         });
     
         const collectAutomatedEvents = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS")?.values?.[0]?.value;
-        const customDomain = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN")?.values?.[0]?.value;
+        const proxyEnabled = variables.find(v => v.key === "SIMPLE_ANALYTICS_PROXY_ENABLED")?.values?.[0]?.value;
   
-        return { collectAutomatedEvents: collectAutomatedEvents !== "false", customDomain: customDomain ?? "" };
+        return { collectAutomatedEvents: collectAutomatedEvents !== "false", enableProxy: proxyEnabled === "true" };
       }),
       mutate: procedure
           .input(siteSettingsSchema)
@@ -115,19 +115,18 @@ export const appRouter = router({
                 });
               }
 
-              if (!input.customDomain) {
-                await client.deleteEnvironmentVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
-                });
-              }
-              else {
+              if (input.enableProxy) {
                 await client.createOrUpdateVariable({
                   accountId: teamId,
                   siteId,
-                  key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
-                  value: input.customDomain,
+                  key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
+                  value: "true",
+                });
+              } else {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
                 });
               }
             } catch (e) {
@@ -320,6 +319,7 @@ export const appRouter = router({
         });
     
         // Get all relevant variables
+        const customDomain = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN")?.values?.[0]?.value;
         const collectDoNotTrack = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_COLLECT_DNT")?.values?.[0]?.value;
         const collectPageViews = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_AUTO_COLLECT")?.values?.[0]?.value;
         const ignoredPages = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_IGNORE_PAGES")?.values?.[0]?.value;
@@ -327,6 +327,7 @@ export const appRouter = router({
         const mode = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_MODE")?.values?.[0]?.value;
         
         return { 
+          customDomain: customDomain ?? "",
           doNotTrack: collectDoNotTrack === "true",
           collectPageViews: collectPageViews === "false" ? false : true,
           ignoredPages: ignoredPages ?? "",
@@ -352,6 +353,22 @@ export const appRouter = router({
           }
   
           try {
+            if (!input.customDomain) {
+              await client.deleteEnvironmentVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
+              });
+            }
+            else {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
+                value: input.customDomain,
+              });
+            }
+
             if (!input.collectDoNotTrack) {
               await client.deleteEnvironmentVariable({
                 accountId: teamId,

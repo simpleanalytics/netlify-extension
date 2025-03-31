@@ -20,7 +20,7 @@ function createScript() {
 
   const scripts: string[] = [];
 
-  if (Netlify.env.get("SIMPLE_ANALYTICS_PROXY_ENABLED")) {
+  if (Netlify.env.get("SIMPLE_ANALYTICS_PROXY_ENABLED") === "true") {
     scripts.push(`<script async src="/proxy.js" ${config}></script>`);
   }
   else {
