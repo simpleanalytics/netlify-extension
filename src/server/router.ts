@@ -258,7 +258,7 @@ export const appRouter = router({
                 });
               }
 
-              if (!input.useTitle) {
+              if (input.useTitle) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
                   siteId,
@@ -270,7 +270,7 @@ export const appRouter = router({
                   accountId: teamId,
                   siteId,
                   key: "SIMPLE_ANALYTICS_EVENT_DATA_USE_TITLE",
-                  value: "true",
+                  value: "false",
                 });
               }
 
