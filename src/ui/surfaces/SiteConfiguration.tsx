@@ -32,7 +32,7 @@ function AdvancedSettings() {
     <Card>
       <CardTitle>Advanced Settings</CardTitle>
       <Form
-        className="tw-pt-6"
+        className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
           collectDoNotTrack: false,
           collectPageViews: false,
@@ -88,7 +88,7 @@ function EventSettings() {
     <Card>
       <CardTitle>Events Settings</CardTitle>
       <Form
-        className="tw-pt-6"
+        className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
           collectAutomatedEvents: false,
           collectDownloads: false,
@@ -167,7 +167,7 @@ function GeneralSettings() {
         Enable Simple Analytics for this site.
       </p>
       <Form
-        className="tw-pt-6"
+        className="tw-pt-6 tw-max-w-170"
         defaultValues={
           query.data ?? {
             collectAutomatedEvents: true,
