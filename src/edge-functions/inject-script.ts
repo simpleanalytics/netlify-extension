@@ -28,7 +28,7 @@ function createScript() {
   }
 
   if (isAutomatedEventsEnabled) {
-    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/events.js"></script>`);
+    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/auto-events.js"></script>`);
   }
 
   return scripts;
