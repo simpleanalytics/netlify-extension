@@ -11,6 +11,8 @@ export type TeamSettings = z.infer<typeof teamSettingsSchema>;
 
 export const siteSettingsSchema = z.object({
   enabled: z.boolean(),
+  collectAutomatedEvents: z.boolean(),
+  customDomain: z.string().trim(),
 });
 
 export type SiteSettings = z.infer<typeof siteSettingsSchema>;
@@ -24,3 +26,13 @@ export const advancedSettingsSchema = z.object({
 });
 
 export type AdvancedSettings = z.infer<typeof advancedSettingsSchema>;
+
+export const eventSettingsSchema = z.object({
+  collectAutomatedEvents: z.boolean(),
+  collectDownloads: z.boolean(),
+  downloadExtensions: z.string().trim(),
+  useTitle: z.boolean(),
+  fullUrls: z.boolean(),
+});
+
+export type EventSettings = z.infer<typeof eventSettingsSchema>;

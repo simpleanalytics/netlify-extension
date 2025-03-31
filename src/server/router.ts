@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { procedure, router } from "./trpc.js";
-import { siteSettingsSchema, teamSettingsSchema, advancedSettingsSchema } from "../schema/settings.js";
+import { siteSettingsSchema, teamSettingsSchema, advancedSettingsSchema, eventSettingsSchema } from "../schema/settings.js";
 
 export const appRouter = router({
   teamSettings: {
@@ -76,10 +76,9 @@ export const appRouter = router({
           siteId,
         });
     
-        const variable = variables.find(v => v.key === "ENABLE_SIMPLE_ANALYTICS");
-        const value = variable?.values?.[0];
+        const collectAutomatedEvents = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS")?.values?.[0]?.value;
   
-        return { enabled: value ? true : false };
+        return { enabled: collectAutomatedEvents !== "false" };
       }),
       mutate: procedure
           .input(siteSettingsSchema)
@@ -99,11 +98,11 @@ export const appRouter = router({
             }
       
             try {
-              if (!input.enabled) {
+              if (input.collectAutomatedEvents) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
                   siteId,
-                  key: "ENABLE_SIMPLE_ANALYTICS",
+                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
                 });
                 return;
               }
@@ -111,9 +110,152 @@ export const appRouter = router({
               await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "ENABLE_SIMPLE_ANALYTICS",
-                value: "true",
+                key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
+                value: "false",
               });
+            } catch (e) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Failed to save site configuration",
+                cause: e,
+              });
+            }
+          }),
+    },
+    events: {
+      query: procedure.query(async ({ ctx: { teamId, siteId, client } }) => {
+        if (!teamId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "teamId is required",
+          });
+        }
+    
+        if (!siteId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "siteId is required",
+          });
+        }
+    
+        const variables = await client.getEnvironmentVariables({
+          accountId: teamId,
+          siteId,
+        });
+    
+        const collectAutomatedEvents = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS")?.values?.[0]?.value;
+        const collectDownloads = variables.find(v => v.key === "SIMPLE_ANALYTICS_EVENT_DATA_COLLECT")?.values?.[0]?.value;
+        const downloadExtensions = variables.find(v => v.key === "SIMPLE_ANALYTICS_EVENT_DATA_EXTENSIONS")?.values?.[0]?.value;
+        const useTitle = variables.find(v => v.key === "SIMPLE_ANALYTICS_EVENT_DATA_USE_TITLE")?.values?.[0]?.value;
+        const fullUrls = variables.find(v => v.key === "SIMPLE_ANALYTICS_EVENT_DATA_FULL_URLS")?.values?.[0]?.value;
+  
+        return { 
+          collectAutomatedEvents: collectAutomatedEvents !== "false",
+          collectDownloads: collectDownloads?.includes("downloads") ? true : false,
+          downloadExtensions: downloadExtensions ? downloadExtensions : "",
+          useTitle: useTitle !== "false",
+          fullUrls: fullUrls !== "false"
+         };
+      }),
+      mutate: procedure
+        .input(eventSettingsSchema)
+          .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
+            if (!teamId) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "teamId is required",
+              });
+            }
+      
+            if (!siteId) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "siteId is required",
+              });
+            }
+      
+            try {
+              if (input.collectAutomatedEvents) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
+                  value: "false",
+                });
+              }
+      
+              if (!input.collectDownloads) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_COLLECT",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_COLLECT",
+                  value: "downloads",
+                });
+              }
+
+              if (!input.downloadExtensions) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_EXTENSIONS",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_EXTENSIONS",
+                  value: input.downloadExtensions,
+                });
+              }
+
+              if (!input.useTitle) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_USE_TITLE",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_USE_TITLE",
+                  value: "true",
+                });
+              }
+
+              if (!input.fullUrls) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_FULL_URLS",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "SIMPLE_ANALYTICS_EVENT_DATA_FULL_URLS",
+                  value: "true",
+                });
+              }
+
+              
             } catch (e) {
               throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
@@ -145,11 +287,11 @@ export const appRouter = router({
         });
     
         // Get all relevant variables
-        const collectDoNotTrack = variables.find(v => v.key === "SIMPLE_ANALYTICS_COLLECT_DNT")?.values?.[0]?.value;
-        const collectPageViews = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT")?.values?.[0]?.value;
-        const ignoredPages = variables.find(v => v.key === "SIMPLE_ANALYTICS_IGNORE_PAGES")?.values?.[0]?.value;
-        const domain = variables.find(v => v.key === "SIMPLE_ANALYTICS_HOSTNAME")?.values?.[0]?.value;
-        const mode = variables.find(v => v.key === "SIMPLE_ANALYTICS_MODE")?.values?.[0]?.value;
+        const collectDoNotTrack = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_COLLECT_DNT")?.values?.[0]?.value;
+        const collectPageViews = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_AUTO_COLLECT")?.values?.[0]?.value;
+        const ignoredPages = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_IGNORE_PAGES")?.values?.[0]?.value;
+        const domain = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_HOSTNAME")?.values?.[0]?.value;
+        const mode = variables.find(v => v.key === "SIMPLE_ANALYTICS_DATA_MODE")?.values?.[0]?.value;
         
         return { 
           doNotTrack: collectDoNotTrack === "true",
@@ -181,13 +323,13 @@ export const appRouter = router({
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_COLLECT_DNT",
+                key: "SIMPLE_ANALYTICS_DATA_COLLECT_DNT",
               });
             } else {
               await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_COLLECT_DNT",
+                key: "SIMPLE_ANALYTICS_DATA_COLLECT_DNT",
                 value: "true",
               });
             }
@@ -196,13 +338,13 @@ export const appRouter = router({
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_AUTO_COLLECT",
+                key: "SIMPLE_ANALYTICS_DATA_AUTO_COLLECT",
               });
             } else {
               await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_AUTO_COLLECT",
+                key: "SIMPLE_ANALYTICS_DATA_AUTO_COLLECT",
                 value: "false",
               });
             }
@@ -211,13 +353,13 @@ export const appRouter = router({
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_IGNORE_PAGES",
+                key: "SIMPLE_ANALYTICS_DATA_IGNORE_PAGES",
               });
             } else {
               await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_IGNORE_PAGES",
+                key: "SIMPLE_ANALYTICS_DATA_IGNORE_PAGES",
                 value: input.ignoredPages,
               });
             }
@@ -226,13 +368,13 @@ export const appRouter = router({
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_HOSTNAME",
+                key: "SIMPLE_ANALYTICS_DATA_HOSTNAME",
               });
             } else {
               await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_HOSTNAME",
+                key: "SIMPLE_ANALYTICS_DATA_HOSTNAME",
                 value: input.overwriteDomain,
               });
             }
@@ -241,13 +383,13 @@ export const appRouter = router({
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_MODE",
+                key: "SIMPLE_ANALYTICS_DATA_MODE",
               });
             } else {
               await client.createOrUpdateVariable({
                 accountId: teamId,
                 siteId,
-                key: "SIMPLE_ANALYTICS_MODE",
+                key: "SIMPLE_ANALYTICS_DATA_MODE",
                 value: "hash",
               });
             }

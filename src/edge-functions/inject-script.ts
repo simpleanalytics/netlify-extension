@@ -4,30 +4,37 @@ import type { Config, Context } from "@netlify/edge-functions";
 import { HTMLRewriter } from "https://ghuc.cc/worker-tools/html-rewriter/index.ts";
 
 function createScript() {
-  const config = {
-    "data-auto-collect": Netlify.env.get("SIMPLE_ANALYTICS_AUTO_COLLECT"),
-    "data-collect-dnt": Netlify.env.get("SIMPLE_ANALYTICS_COLLECT_DNT"),
-    "data-hostname":Netlify.env.get("SIMPLE_ANALYTICS_HOSTNAME"),
-    "data-mode": Netlify.env.get("SIMPLE_ANALYTICS_MODE"),
-    "data-ignore-metrics": Netlify.env.get("SIMPLE_ANALYTICS_IGNORE_METRICS"),
-    "data-ignore-pages": Netlify.env.get("SIMPLE_ANALYTICS_IGNORE_PAGES"),
-    "data-allow-params": Netlify.env.get("SIMPLE_ANALYTICS_ALLOW_PARAMS"),
-    "data-non-unique-params": Netlify.env.get("SIMPLE_ANALYTICS_NON_UNIQUE_PARAMS"),
-    "data-strict-utm": Netlify.env.get("SIMPLE_ANALYTICS_STRICT_UTM"),
-  };
-
-  const configString = Object.entries(config)
-    .filter(([_, value]) => value !== undefined)
+  const scriptConfig = Object.entries(Netlify.env.toObject())
+    .filter(([key]) => key.startsWith("SIMPLE_ANALYTICS_DATA_"))
+    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_", "").replace("_", "-").toLowerCase(), value])
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
+  const eventsConfig = Object.entries(Netlify.env.toObject())
+    .filter(([key]) => key.startsWith("SIMPLE_ANALYTICS_EVENTS_DATA_"))
+    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_EVENTS_", "").replace("_", "-").toLowerCase(), value])
+    .map(([key, value]) => `${key}="${value}"`).join(" ");
+
+  const isAutomatedEventsEnabled = Netlify.env.get("SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS") !== "false";
+  
+  const config = isAutomatedEventsEnabled ? scriptConfig : `${scriptConfig} ${eventsConfig}`;
+
+  const scripts: string[] = [];
+
   if (Netlify.env.get("SIMPLE_ANALYTICS_PROXY_ENABLED")) {
-    return `<script async src="/proxy.js" ${configString}></script>`;
+    scripts.push(`<script async src="/proxy.js" ${config}></script>`);
+  }
+  else {
+    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${config}></script>`);
   }
 
-  return `<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${configString}></script>`;
+  if (isAutomatedEventsEnabled) {
+    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/events.js"></script>`);
+  }
+
+  return scripts;
 }
 
-export default async function handler(request: Request, context: Context) {
+export default async function handler(_request: Request, context: Context) {
   const response = await context.next();
 
   if (!response.headers.get("Content-Type")?.includes("text/html")) {
@@ -39,7 +46,11 @@ export default async function handler(request: Request, context: Context) {
       element(element) {
         // Only insert the script tag if it's the closing body tag
         if (element.tagName === "body") {
-          element.append(createScript(), { html: true });
+          const scripts = createScript();
+
+          for (const script of scripts) {
+            element.append(script, { html: true });
+          }
         }
       }
     });
