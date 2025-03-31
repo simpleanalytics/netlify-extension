@@ -13,12 +13,16 @@ import {
   advancedSettingsSchema,
   eventSettingsSchema,
 } from "../../schema/settings";
+import { useState } from "react";
 
 function AdvancedSettings() {
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const trpcUtils = trpc.useUtils();
   const query = trpc.siteSettings.advanced.query.useQuery();
   const mutation = trpc.siteSettings.advanced.mutate.useMutation({
     onSuccess: async () => {
+      setHasSubmitted(true);
+
       await trpcUtils.siteSettings.advanced.query.invalidate();
     },
   });
@@ -74,15 +78,20 @@ function AdvancedSettings() {
           helpText="Enable hash mode to track URLs with hashes as separate page views. (default: false)"
         />
       </Form>
+
+      {hasSubmitted && <p>Your settings have been saved. You must trigger a new production deploy for the changes to take effect.</p>}
     </Card>
   );
 }
 
 function EventSettings() {
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const trpcUtils = trpc.useUtils();
   const query = trpc.siteSettings.events.query.useQuery();
   const mutation = trpc.siteSettings.events.mutate.useMutation({
     onSuccess: async () => {
+      setHasSubmitted(true);
+
       await trpcUtils.siteSettings.events.query.invalidate();
     },
   });
@@ -151,15 +160,20 @@ function EventSettings() {
           helpText="Enable or disable full URL collection. (default: off)"
         />
       </Form>
+
+      {hasSubmitted && <p>Your settings have been saved. You must trigger a new production deploy for the changes to take effect.</p>}
     </Card>
   );
 }
 
 function GeneralSettings() {
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const trpcUtils = trpc.useUtils();
   const query = trpc.siteSettings.general.query.useQuery();
   const mutation = trpc.siteSettings.general.mutate.useMutation({
     onSuccess: async () => {
+      setHasSubmitted(true);
+
       await trpcUtils.siteSettings.general.query.invalidate();
     },
   });
@@ -195,6 +209,8 @@ function GeneralSettings() {
           helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions. (default: off)"
         />
       </Form>
+
+      {hasSubmitted && <p>Your settings have been saved. You must trigger a new production deploy for the changes to take effect.</p>}
     </Card>
   );
 }
