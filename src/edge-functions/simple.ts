@@ -6,7 +6,7 @@ export default async (request: Request, context: Context) => {
   url.hostname = "queue.simpleanalyticscdn.com";
   url.pathname = url.pathname.substring(7);
 
-  return url;
+  return fetch(new Request(url, request));
 };
 
 export const config: Config = {
