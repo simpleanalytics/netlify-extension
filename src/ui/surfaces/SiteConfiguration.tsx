@@ -98,11 +98,11 @@ function EventSettings() {
         className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
           collectAutomatedEvents: true,
-          collectDownloads: false,
-          collectEmailClicks: false,
-          collectOutboundLinks: false,
+          collectDownloads: true,
+          collectEmailClicks: true,
+          collectOutboundLinks: true,
           downloadExtensions: "", // default = undefined
-          useTitle: false,
+          useTitle: true,
           fullUrls: false,
         }}
         schema={eventSettingsSchema}

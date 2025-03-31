@@ -212,7 +212,7 @@ export const appRouter = router({
                 });
               }
       
-              if (!input.collectDownloads && !input.collectEmailClicks && !input.collectOutboundLinks) {
+              if (input.collectDownloads && input.collectEmailClicks && input.collectOutboundLinks) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
                   siteId,
