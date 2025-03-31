@@ -6,12 +6,12 @@ import { HTMLRewriter } from "https://ghuc.cc/worker-tools/html-rewriter/index.t
 function createScript() {
   const scriptConfig = Object.entries(Netlify.env.toObject())
     .filter(([key]) => key.startsWith("SIMPLE_ANALYTICS_DATA_"))
-    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_", "").replace("_", "-").toLowerCase(), value])
+    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_", "").replaceAll("_", "-").toLowerCase(), value])
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
   const eventsConfig = Object.entries(Netlify.env.toObject())
     .filter(([key]) => key.startsWith("SIMPLE_ANALYTICS_EVENTS_DATA_"))
-    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_EVENTS_", "").replace("_", "-").toLowerCase(), value])
+    .map(([key, value]) => [key.replace("SIMPLE_ANALYTICS_EVENTS_", "").replaceAll("_", "-").toLowerCase(), value])
     .map(([key, value]) => `${key}="${value}"`).join(" ");
 
   const isAutomatedEventsEnabled = Netlify.env.get("SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS") !== "false";
