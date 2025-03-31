@@ -191,7 +191,7 @@ function GeneralSettings() {
         <Checkbox
           name="enableProxy"
           label="Enable analytics proxy"
-          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extentions."
+          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions."
         />
       </Form>
     </Card>
