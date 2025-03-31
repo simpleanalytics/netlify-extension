@@ -47,31 +47,31 @@ function AdvancedSettings() {
           name="customDomain"
           type="text"
           label="Custom domain"
-          helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty."
+          helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty. (default: empty)"
         />
 
-        <Checkbox name="collectDoNotTrack" label="Collect DNT visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well." />
+        <Checkbox name="collectDoNotTrack" label="Collect DNT visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off)" />
 
-        <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection." />
+        <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection. (default: on)" />
 
         <FormField
           name="ignoredPages"
           type="text"
           label="Ignore pages"
-          helpText="Not want to run Simple Analytics on certain pages? Enter them here. You can use asterisks (*) to specify multiple pages, example: /page1,/page2,/admin/*"
+          helpText="Not want to run Simple Analytics on certain pages? Enter them here. You can use asterisks (*) to specify multiple pages, example: /page1,/page2,/admin/* (default: empty)"
         />
 
         <FormField
           name="overwriteDomain"
           type="text"
           label="Overwrite domain"
-          helpText="Are you running your website on a different domain than what is listed in Simple Analytics? Overwrite your domain name here."
+          helpText="Are you running your website on a different domain than what is listed in Simple Analytics? Overwrite your domain name here. (default: empty)"
         />
 
         <Checkbox
           name="hashMode"
           label="Enable hash mode"
-          helpText="Enable hash mode to track URLs with hashes as separate page views."
+          helpText="Enable hash mode to track URLs with hashes as separate page views. (default: false)"
         />
       </Form>
     </Card>
@@ -116,38 +116,39 @@ function EventSettings() {
         <Checkbox
           name="collectDownloads"
           label="Collect downloads"
-          helpText="It will track downloads of certain files."
+          helpText="It will track downloads of certain files. (default: on)"
         />
 
         <Checkbox
           name="collectOutboundLinks"
           label="Collect outbound links"
-          helpText="It will track clicks on links to other websites."
+          helpText="It will track clicks on links to other websites. (default: on)"
         />
 
         <Checkbox
           name="collectEmailClicks"
           label="Collect email clicks"
-          helpText="It will track clicks on email addresses."
+          helpText="It will track clicks on email addresses. (default: on)"
         />
 
         <FormField
           name="downloadExtensions"
           type="text"
           label="Extensions"
-          helpText="Select the extensions you want to count the downloads of. Example (and default): pdf,csv,docx,xlsx,zip"
+          placeholder="pdf,csv,docx,xlsx,zip,doc,xls"
+          helpText="Select the extensions you want to count the downloads of. (default: 'pdf,csv,docx,xlsx,zip,doc,xls')"
         />
 
         <Checkbox
           name="useTitle"
           label="Use title"
-          helpText="Enable or disable title collection."
+          helpText="Enable or disable title collection. (default: on)"
         />
 
         <Checkbox
           name="fullUrls"
           label="Full URLs"
-          helpText="Enable or disable full URL collection."
+          helpText="Enable or disable full URL collection. (default: off)"
         />
       </Form>
     </Card>
@@ -186,12 +187,12 @@ function GeneralSettings() {
       >
         <Checkbox name="collectAutomatedEvents" 
           label="Collect automated events"
-          helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com" />
+          helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com. (default: on)" />
 
         <Checkbox
           name="enableProxy"
           label="Enable analytics proxy"
-          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions."
+          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions. (default: off)"
         />
       </Form>
     </Card>
