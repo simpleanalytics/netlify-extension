@@ -177,8 +177,8 @@ function GeneralSettings() {
         className="tw-pt-6 tw-max-w-170"
         defaultValues={
           query.data ?? {
-            enableProxy: false,
             collectAutomatedEvents: true,
+            enableProxy: false,
           }
         }
         schema={siteSettingsSchema}

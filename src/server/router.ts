@@ -79,7 +79,10 @@ export const appRouter = router({
         const collectAutomatedEvents = variables.find(v => v.key === "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS")?.values?.[0]?.value;
         const proxyEnabled = variables.find(v => v.key === "SIMPLE_ANALYTICS_PROXY_ENABLED")?.values?.[0]?.value;
   
-        return { collectAutomatedEvents: collectAutomatedEvents !== "false", enableProxy: proxyEnabled === "true" };
+        return {
+          collectAutomatedEvents: collectAutomatedEvents !== "false",
+          enableProxy: proxyEnabled === "true"
+        };
       }),
       mutate: procedure
           .input(siteSettingsSchema)
@@ -328,8 +331,8 @@ export const appRouter = router({
         
         return { 
           customDomain: customDomain ?? "",
-          doNotTrack: collectDoNotTrack === "true",
-          collectPageViews: collectPageViews === "false" ? false : true,
+          collectDoNotTrack: collectDoNotTrack === "true",
+          collectPageViews: collectPageViews !== "false",
           ignoredPages: ignoredPages ?? "",
           overwriteDomain: domain ?? "",
           hashMode: mode === "hash"
