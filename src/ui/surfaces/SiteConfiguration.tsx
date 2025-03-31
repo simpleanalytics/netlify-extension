@@ -92,6 +92,8 @@ function EventSettings() {
         defaultValues={query.data ?? {
           collectAutomatedEvents: false,
           collectDownloads: false,
+          collectEmailClicks: false,
+          collectOutboundLinks: false,
           downloadExtensions: "",
           useTitle: false,
           fullUrls: false,
@@ -108,6 +110,18 @@ function EventSettings() {
           name="collectDownloads"
           label="Collect downloads"
           helpText="It will track downloads of certain files."
+        />
+
+        <Checkbox
+          name="collectOutboundLinks"
+          label="Collect outbound links"
+          helpText="It will track clicks on links to other websites."
+        />
+
+        <Checkbox
+          name="collectEmailClicks"
+          label="Collect email clicks"
+          helpText="It will track clicks on email addresses."
         />
 
         <FormField

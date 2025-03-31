@@ -29,6 +29,8 @@ export type AdvancedSettings = z.infer<typeof advancedSettingsSchema>;
 export const eventSettingsSchema = z.object({
   collectAutomatedEvents: z.boolean(),
   collectDownloads: z.boolean(),
+  collectEmailClicks: z.boolean(),
+  collectOutboundLinks: z.boolean(),
   downloadExtensions: z.string().trim(),
   useTitle: z.boolean(),
   fullUrls: z.boolean(),

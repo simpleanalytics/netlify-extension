@@ -168,7 +168,9 @@ export const appRouter = router({
   
         return { 
           collectAutomatedEvents: collectAutomatedEvents !== "false",
-          collectDownloads: collectDownloads?.includes("downloads") ? true : false,
+          collectDownloads: !!collectDownloads?.includes("downloads"),
+          collectEmailClicks: !!collectDownloads?.includes("email"),
+          collectOutboundLinks: !!collectDownloads?.includes("outbound"),
           downloadExtensions: downloadExtensions ? downloadExtensions : "",
           useTitle: useTitle !== "false",
           fullUrls: fullUrls !== "false"
@@ -208,7 +210,7 @@ export const appRouter = router({
                 });
               }
       
-              if (!input.collectDownloads) {
+              if (!input.collectDownloads && !input.collectEmailClicks && !input.collectOutboundLinks) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
                   siteId,
@@ -216,11 +218,25 @@ export const appRouter = router({
                 });
               }
               else {
+                const options: string[] = [];
+
+                if (input.collectDownloads) {
+                  options.push("downloads");
+                }
+
+                if (input.collectEmailClicks) {
+                  options.push("emails");
+                }
+
+                if (input.collectOutboundLinks) {
+                  options.push("outbound");
+                }
+
                 await client.createOrUpdateVariable({
                   accountId: teamId,
                   siteId,
                   key: "SIMPLE_ANALYTICS_EVENT_DATA_COLLECT",
-                  value: "downloads",
+                  value: options.join(","),
                 });
               }
 
