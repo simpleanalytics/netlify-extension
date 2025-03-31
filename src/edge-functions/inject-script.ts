@@ -22,10 +22,15 @@ function createScript() {
 
   if (Netlify.env.get("SIMPLE_ANALYTICS_PROXY_ENABLED") === "true") {
     scripts.push(`<script async src="/proxy.js" ${config}></script>`);
+
+    if (isAutomatedEventsEnabled) {
+      scripts.push(`<script async src="/auto-events.js"></script>`);
+    }
+
+    return scripts;
   }
-  else {
-    scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${config}></script>`);
-  }
+
+  scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/latest.js" ${config}></script>`);
 
   if (isAutomatedEventsEnabled) {
     scripts.push(`<script async src="https://scripts.simpleanalyticscdn.com/auto-events.js"></script>`);

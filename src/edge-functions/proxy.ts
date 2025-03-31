@@ -1,11 +1,11 @@
 import type { Context, Config } from "@netlify/edge-functions";
 
 export default async (request: Request, context: Context) => {
-  const url = new URL(request.url);
+  const hostname = new URL(request.url).hostname;
 
-  url.hostname = "simpleanalyticscdn.com";
+  console.log(`Hostname: ${hostname}`);
 
-  return url;
+  return new URL(`https://simpleanalyticsexternal.com/proxy.js?hostname=${hostname}&path=/simple`);
 };
 
 export const config: Config = {
