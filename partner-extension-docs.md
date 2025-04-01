@@ -6,7 +6,7 @@ Simple Analytics
 
 ## Extension description
 
-[Simple Analytics](https://www.simpleanalytics.com/) is a privacy-friendly and simple alternative to Google Analytics. No cookies. No trackers. No consent required from your visitors. Just straightforward analytics.
+[Simple Analytics](https://www.simpleanalytics.com/) is a European privacy-friendly and simple alternative to Google Analytics. No cookies. No trackers. No consent required from your visitors. Just straightforward analytics.
 
 ## Extension logo: a high-resolution bitmap image, non-transparent PNG, minimum 320px
 
