@@ -28,13 +28,11 @@ Simple Analytics
 
 ## A detailed description of what your extension does and how it works
 
-The extension uses an edge function to inject the Simple Analytics script into the HTML of websites.
-This is done using the WASM implementation of HTMLRewriter.
-Depending on the configuration the edge function might inject different scripts.
+The Simple Analytics extension makes it easy to add privacy-friendly analytics to your Netlify site. It works out of the box and doesn’t use cookies or trackers, so there’s no need for cookie banners or user consent. Once enabled, it starts collecting page views and events while respecting your visitors’ privacy.
 
-The extension allows users to use different analytics scripts per website though environment variables.
+You can toggle settings directly in the Netlify UI. For example, you can turn on event tracking for things like outbound link clicks and file downloads, or use a custom domain to bypass ad blockers. There are also more advanced options like ignoring certain pages, tracking hash-based URLs, or overriding the reported domain name.
 
-Furthermore, the three additional edge functions (/proxy.js, /auto-events.js, /simple/*) are included to proxy requests to Simple Analytics, for scripts and sending metrics, and avoid these from being blocked by adblockers.
+It’s flexible enough for more custom setups too. You can choose whether to track visits from users with Do Not Track enabled, decide if full URLs or just paths should be logged, and define which file extensions count as downloads. Everything is synced with environment variables so your config stays clean and consistent.
 
 ## Whether or not you’re migrating an existing extension to one built with the Netlify SDK
 
