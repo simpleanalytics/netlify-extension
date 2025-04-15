@@ -12,7 +12,6 @@ Simple Analytics
 
 ## A list of environment variables that your extension will interact with
 
-- SIMPLE_ANALYTICS_DISABLED
 - SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS
 - SIMPLE_ANALYTICS_PROXY_ENABLED
 - SIMPLE_ANALYTICS_EVENT_DATA_COLLECT
