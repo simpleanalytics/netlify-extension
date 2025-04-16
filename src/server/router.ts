@@ -27,7 +27,7 @@ export const appRouter = router({
 
         const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
 
-        return config.general ?? {};
+        return config.general;
       }),
       mutate: procedure
           .input(generalSettingsSchema)
@@ -126,7 +126,7 @@ export const appRouter = router({
 
         const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
 
-        return config.events ?? {};
+        return config.events;
       }),
       mutate: procedure
         .input(eventSettingsSchema)
@@ -271,7 +271,7 @@ export const appRouter = router({
 
         const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
 
-        return config.advanced ?? {};
+        return config.advanced;
       }),
       mutate: procedure
         .input(advancedSettingsSchema)
