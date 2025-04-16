@@ -185,13 +185,12 @@ function GeneralSettings() {
   return (
     <Card>
       <CardTitle>General</CardTitle>
-      <p>
-        Enable Simple Analytics for this site.
-      </p>
+
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={
           query.data ?? {
+            enableAnalytics: false,
             collectAutomatedEvents: true,
             enableProxy: false,
           }
@@ -199,6 +198,10 @@ function GeneralSettings() {
         schema={generalSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
+        <Checkbox name="enableAnalytics"
+          label="Enable Simple Analytics"
+          helpText="Enable Simple Analytics for this site." />
+
         <Checkbox name="collectAutomatedEvents" 
           label="Collect automated events"
           helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com. (default: on)" />

@@ -53,6 +53,22 @@ export const appRouter = router({
 
       
             try {
+              if (!input.enableAnalytics) {
+                await client.deleteEnvironmentVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "ENABLE_SIMPLE_ANALYTICS",
+                });
+              }
+              else {
+                await client.createOrUpdateVariable({
+                  accountId: teamId,
+                  siteId,
+                  key: "ENABLE_SIMPLE_ANALYTICS",
+                  value: "true",
+                });
+              }
+
               if (input.collectAutomatedEvents) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
