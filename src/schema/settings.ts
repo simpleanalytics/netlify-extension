@@ -9,12 +9,12 @@ export const teamSettingsSchema = z.object({
 
 export type TeamSettings = z.infer<typeof teamSettingsSchema>;
 
-export const siteSettingsSchema = z.object({
+export const generalSettingsSchema = z.object({
   enableProxy: z.boolean(),
   collectAutomatedEvents: z.boolean(),
 });
 
-export type SiteSettings = z.infer<typeof siteSettingsSchema>;
+export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 
 export const advancedSettingsSchema = z.object({
   customDomain: z.string().trim(),
@@ -38,3 +38,11 @@ export const eventSettingsSchema = z.object({
 });
 
 export type EventSettings = z.infer<typeof eventSettingsSchema>;
+
+export const siteSettingsSchema = z.object({
+  general: generalSettingsSchema,
+  advanced: advancedSettingsSchema,
+  events: eventSettingsSchema,
+});
+  
+export type SiteSettings = z.infer<typeof siteSettingsSchema>;

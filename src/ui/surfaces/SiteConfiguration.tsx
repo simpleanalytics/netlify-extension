@@ -9,7 +9,7 @@ import {
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { 
-  siteSettingsSchema,
+  generalSettingsSchema,
   advancedSettingsSchema,
   eventSettingsSchema,
 } from "../../schema/settings";
@@ -196,7 +196,7 @@ function GeneralSettings() {
             enableProxy: false,
           }
         }
-        schema={siteSettingsSchema}
+        schema={generalSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
         <Checkbox name="collectAutomatedEvents" 
