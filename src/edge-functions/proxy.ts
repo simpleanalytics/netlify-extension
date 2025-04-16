@@ -9,4 +9,5 @@ export default async (request: Request, context: Context) => {
 
 export const config: Config = {
   path: "/proxy.js",
+  cache: "manual",
 };

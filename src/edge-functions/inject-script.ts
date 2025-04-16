@@ -63,5 +63,6 @@ export default async function handler(_request: Request, context: Context) {
 
 export const config: Config = {
   path: "/*",
+  cache: "manual",
   onError: "bypass"
 };
