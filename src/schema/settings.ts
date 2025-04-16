@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export const teamSettingsSchema = z.object({
-  exampleString: z.string().min(1),
-  exampleSecret: z.string().min(1),
-  exampleBoolean: z.boolean(),
-  exampleNumber: z.number(),
-});
-
-export type TeamSettings = z.infer<typeof teamSettingsSchema>;
-
 export const generalSettingsSchema = z.object({
   enableProxy: z.boolean(),
   collectAutomatedEvents: z.boolean(),
