@@ -126,7 +126,10 @@ export const appRouter = router({
 
         const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
 
-        return config.events;
+        return {
+          ...config.events,
+          collectAutomatedEvents: config?.general?.collectAutomatedEvents,
+        };
       }),
       mutate: procedure
         .input(eventSettingsSchema)
@@ -145,9 +148,21 @@ export const appRouter = router({
               });
             }
 
+            const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
+
+            const { collectAutomatedEvents, ...events } = input;
+
             await client.upsertSiteConfiguration(teamId, siteId, {
-              ...(await client.getSiteConfiguration(teamId, siteId))?.config ?? {},
-              events: input
+              general: {
+                // Ensure we set the right defaults when the general settings aren't set
+                ...config.general ?? {
+                  enableAnalytics: false,
+                  enableProxy: false,
+                },
+                collectAutomatedEvents
+              },
+              events,
+              advanced: config.advanced
             });
       
             try {
