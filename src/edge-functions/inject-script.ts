@@ -1,7 +1,7 @@
 // Documentation: https://sdk.netlify.com/docs
 
 import type { Config, Context } from "@netlify/edge-functions";
-import { HTMLRewriter, init } from "https://deno.land/x/htmlrewriter/src/index.ts";
+import { HTMLRewriter, init } from "https://deno.land/x/htmlrewriter@v1.0.0/src/index.ts";
 
 await init();
 
