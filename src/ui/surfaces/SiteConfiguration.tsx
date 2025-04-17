@@ -9,7 +9,7 @@ import {
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { 
-  siteSettingsSchema,
+  generalSettingsSchema,
   advancedSettingsSchema,
   eventSettingsSchema,
 } from "../../schema/settings";
@@ -54,7 +54,7 @@ function AdvancedSettings() {
           helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty. (default: empty)"
         />
 
-        <Checkbox name="collectDoNotTrack" label="Collect DNT visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off)" />
+        <Checkbox name="collectDoNotTrack" label="Collect Do Not Track visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off)" />
 
         <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection. (default: on)" />
 
@@ -185,20 +185,23 @@ function GeneralSettings() {
   return (
     <Card>
       <CardTitle>General</CardTitle>
-      <p>
-        Enable Simple Analytics for this site.
-      </p>
+
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={
           query.data ?? {
+            enableAnalytics: false,
             collectAutomatedEvents: true,
             enableProxy: false,
           }
         }
-        schema={siteSettingsSchema}
+        schema={generalSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
+        <Checkbox name="enableAnalytics"
+          label="Enable Simple Analytics"
+          helpText="Enable Simple Analytics for this site." />
+
         <Checkbox name="collectAutomatedEvents" 
           label="Collect automated events"
           helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com. (default: on)" />

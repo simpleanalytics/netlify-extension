@@ -8,4 +8,5 @@ export default async (request: Request, context: Context) => {
 
 export const config: Config = {
   path: "/auto-events.js",
+  cache: "manual",
 };
