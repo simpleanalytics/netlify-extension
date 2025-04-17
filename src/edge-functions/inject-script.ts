@@ -1,7 +1,9 @@
 // Documentation: https://sdk.netlify.com/docs
 
 import type { Config, Context } from "@netlify/edge-functions";
-import { HTMLRewriter } from "https://deno.land/x/htmlrewriter/src/index.ts";
+import { HTMLRewriter, init } from "https://deno.land/x/htmlrewriter/src/index.ts";
+
+await init();
 
 function createScript() {
   const scriptConfig = Object.entries(Netlify.env.toObject())
