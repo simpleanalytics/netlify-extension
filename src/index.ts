@@ -5,9 +5,6 @@ const extension = new NetlifyExtension();
 
 extension.addEdgeFunctions("./src/edge-functions", {
   prefix: "sa_plugin",
-  shouldInjectFunction: () => {
-    return process.env["ENABLE_SIMPLE_ANALYTICS"] === "true";
-  },
 });
 
 export { extension };
