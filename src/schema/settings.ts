@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
+  enableAnalytics: z.boolean(),
   enableProxy: z.boolean(),
   collectAutomatedEvents: z.boolean(),
 });
