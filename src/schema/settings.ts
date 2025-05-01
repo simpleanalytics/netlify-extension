@@ -9,7 +9,6 @@ export const generalSettingsSchema = z.object({
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 
 export const advancedSettingsSchema = z.object({
-  customDomain: z.string().trim(),
   collectDoNotTrack: z.boolean(),
   collectPageViews: z.boolean(),
   ignoredPages: z.string().trim(),

@@ -37,7 +37,6 @@ function AdvancedSettings() {
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
-          customDomain: "", // default = undefined
           collectDoNotTrack: false,
           collectPageViews: true,
           ignoredPages: "", // default = undefined
@@ -47,13 +46,6 @@ function AdvancedSettings() {
         schema={advancedSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
-        <FormField
-          name="customDomain"
-          type="text"
-          label="Custom domain"
-          helpText="A custom domain can help with by-passing ad-blockers. It's not required and if you don't know what it is, just leave it empty. (default: empty)"
-        />
-
         <Checkbox name="collectDoNotTrack" label="Collect Do Not Track visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off)" />
 
         <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection. (default: on)" />

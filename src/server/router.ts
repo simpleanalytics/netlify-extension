@@ -311,22 +311,6 @@ export const appRouter = router({
           });
   
           try {
-            if (!input.customDomain) {
-              await client.deleteEnvironmentVariable({
-                accountId: teamId,
-                siteId,
-                key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
-              });
-            }
-            else {
-              await client.createOrUpdateVariable({
-                accountId: teamId,
-                siteId,
-                key: "SIMPLE_ANALYTICS_DATA_CUSTOM_DOMAIN",
-                value: input.customDomain,
-              });
-            }
-
             if (!input.collectDoNotTrack) {
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
