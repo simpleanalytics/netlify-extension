@@ -1,7 +1,7 @@
 {
   "name": "simpleanalytics",
   "version": "0.0.1",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
