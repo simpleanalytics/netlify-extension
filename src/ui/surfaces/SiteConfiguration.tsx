@@ -108,7 +108,7 @@ function EventSettings() {
           collectDownloads: true,
           collectEmailClicks: true,
           collectOutboundLinks: true,
-          downloadExtensions: "", // default = undefined
+          downloadExtensions: "pdf,csv,docx,xlsx,zip,doc,xls",
           useTitle: true,
           fullUrls: false,
         }}
