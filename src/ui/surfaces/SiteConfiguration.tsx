@@ -105,7 +105,6 @@ function EventSettings() {
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
-          collectAutomatedEvents: true,
           collectDownloads: true,
           collectEmailClicks: true,
           collectOutboundLinks: true,
@@ -116,11 +115,6 @@ function EventSettings() {
         schema={eventSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
-        <Checkbox name="collectAutomatedEvents" 
-          label="Collect automated events"
-          helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com" />
-
-
         <Checkbox
           name="collectDownloads"
           label="Collect downloads"

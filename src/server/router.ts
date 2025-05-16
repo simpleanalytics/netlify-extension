@@ -111,10 +111,7 @@ export const appRouter = router({
 
         const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
 
-        return {
-          ...config.events,
-          collectAutomatedEvents: config?.general?.collectAutomatedEvents,
-        };
+        return config.events;
       }),
       mutate: procedure
         .input(eventSettingsSchema)
@@ -133,39 +130,12 @@ export const appRouter = router({
               });
             }
 
-            const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
-
-            const { collectAutomatedEvents, ...events } = input;
-
             await client.upsertSiteConfiguration(teamId, siteId, {
-              general: {
-                // Ensure we set the right defaults when the general settings aren't set
-                ...config.general ?? {
-                  enableAnalytics: false,
-                },
-                collectAutomatedEvents
-              },
-              events,
-              advanced: config.advanced
+              ...(await client.getSiteConfiguration(teamId, siteId))?.config ?? {},
+              events: input,
             });
       
             try {
-              if (input.collectAutomatedEvents) {
-                await client.deleteEnvironmentVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
-                });
-              }
-              else {
-                await client.createOrUpdateVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
-                  value: "false",
-                });
-              }
-      
               if (input.collectDownloads && input.collectEmailClicks && input.collectOutboundLinks) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
