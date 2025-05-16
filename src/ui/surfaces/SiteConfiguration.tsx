@@ -37,6 +37,7 @@ function AdvancedSettings() {
       <Form
         className="tw-pt-6 tw-max-w-170"
         defaultValues={query.data ?? {
+          enableProxy: false,
           collectDoNotTrack: false,
           collectPageViews: true,
           ignoredPages: "", // default = undefined
@@ -46,6 +47,12 @@ function AdvancedSettings() {
         schema={advancedSettingsSchema}
         onSubmit={mutation.mutateAsync}
       >
+        <Checkbox
+          name="enableProxy"
+          label="Enable analytics proxy"
+          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions. (default: off)" 
+        />
+
         <Checkbox name="collectDoNotTrack" label="Collect Do Not Track visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off)" />
 
         <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection. (default: on)" />
@@ -184,7 +191,6 @@ function GeneralSettings() {
           query.data ?? {
             enableAnalytics: false,
             collectAutomatedEvents: true,
-            enableProxy: false,
           }
         }
         schema={generalSettingsSchema}
@@ -197,12 +203,6 @@ function GeneralSettings() {
         <Checkbox name="collectAutomatedEvents" 
           label="Collect automated events"
           helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com. (default: on)" />
-
-        <Checkbox
-          name="enableProxy"
-          label="Enable analytics proxy"
-          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions. (default: off)"
-        />
       </Form>
 
       {hasSubmitted && <p>Your settings have been saved. You must trigger a new production deploy for the changes to take effect.</p>}

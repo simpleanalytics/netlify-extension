@@ -84,21 +84,6 @@ export const appRouter = router({
                   value: "false",
                 });
               }
-
-              if (input.enableProxy) {
-                await client.createOrUpdateVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
-                  value: "true",
-                });
-              } else {
-                await client.deleteEnvironmentVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
-                });
-              }
             } catch (e) {
               throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
@@ -157,7 +142,6 @@ export const appRouter = router({
                 // Ensure we set the right defaults when the general settings aren't set
                 ...config.general ?? {
                   enableAnalytics: false,
-                  enableProxy: false,
                 },
                 collectAutomatedEvents
               },
@@ -311,6 +295,21 @@ export const appRouter = router({
           });
   
           try {
+            if (input.enableProxy) {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
+                value: "true",
+              });
+            } else {
+              await client.deleteEnvironmentVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
+              });
+            }
+            
             if (!input.collectDoNotTrack) {
               await client.deleteEnvironmentVariable({
                 accountId: teamId,

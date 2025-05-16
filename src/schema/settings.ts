@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
   enableAnalytics: z.boolean(),
-  enableProxy: z.boolean(),
   collectAutomatedEvents: z.boolean(),
 });
 
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 
 export const advancedSettingsSchema = z.object({
+  enableProxy: z.boolean(),
   collectDoNotTrack: z.boolean(),
   collectPageViews: z.boolean(),
   ignoredPages: z.string().trim(),
