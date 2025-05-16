@@ -5,6 +5,7 @@ import {
   Checkbox,
   Form,
   FormField,
+  Link,
   SiteConfigurationSurface,
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
@@ -50,31 +51,69 @@ function AdvancedSettings() {
         <Checkbox
           name="enableProxy"
           label="Enable analytics proxy"
-          helpText="Enable the proxying to prevent metrics from being blocked by ad-blocking extensions. (default: off)" 
+          helpText={
+            <>
+              {"Enable the proxying to prevent metrics from being blocked by ad-blocking extensions. (default: off) "}
+              <Link href="https://docs.simpleanalytics.com/proxy">Learn more</Link>
+            </>
+          }
         />
 
-        <Checkbox name="collectDoNotTrack" label="Collect Do Not Track visits" helpText="The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off)" />
+        <Checkbox
+          name="collectDoNotTrack"
+          label="Collect Do Not Track visits"
+          helpText={
+            <>
+              {"The Do Not Track setting requests that a web application disables either its tracking or cross-site user tracking of an individual user. We don't do that ever, so you can select to collect those visits as well. (default: off) "}
+              <Link href="https://docs.simpleanalytics.com/dnt">Learn more</Link>
+            </>
+          }
+        />
 
-        <Checkbox name="collectPageViews" label="Collect page views" helpText="Enable or disable page view collection. (default: on)" />
+        <Checkbox
+          name="collectPageViews"
+          label="Collect page views"
+          helpText={
+            <>
+              {"Enable or disable page view collection. (default: on) "}
+              <Link href="https://docs.simpleanalytics.com/trigger-custom-page-views">Learn more</Link>
+            </>
+          }
+        />
 
         <FormField
           name="ignoredPages"
           type="text"
           label="Ignore pages"
-          helpText="Not want to run Simple Analytics on certain pages? Enter them here. You can use asterisks (*) to specify multiple pages, example: /page1,/page2,/admin/* (default: empty)"
+          helpText={
+            <>
+              {"Not want to run Simple Analytics on certain pages? Enter them here. You can use asterisks (*) to specify multiple pages, example: /page1,/page2,/admin/* (default: empty) "}
+              <Link href="https://docs.simpleanalytics.com/ignore-pages">Learn more</Link>
+            </>
+          }
         />
 
         <FormField
           name="overwriteDomain"
           type="text"
           label="Overwrite domain"
-          helpText="Are you running your website on a different domain than what is listed in Simple Analytics? Overwrite your domain name here. (default: empty)"
+          helpText={
+            <>
+              {"Are you running your website on a different domain than what is listed in Simple Analytics? Overwrite your domain name here. (default: empty) "}
+              <Link href="https://docs.simpleanalytics.com/overwrite-domain-name">Learn more</Link>
+            </>
+          }
         />
 
         <Checkbox
           name="hashMode"
           label="Enable hash mode"
-          helpText="Enable hash mode to track URLs with hashes as separate page views. (default: false)"
+          helpText={
+            <>
+              {"Enable hash mode to track URLs with hashes as separate page views. (default: false "}
+              <Link href="https://docs.simpleanalytics.com/hash-mode">Learn more</Link>
+            </>
+          }
         />
       </Form>
 
@@ -196,7 +235,12 @@ function GeneralSettings() {
 
         <Checkbox name="collectAutomatedEvents" 
           label="Collect automated events"
-          helpText="It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com. (default: on)" />
+          helpText={
+            <>
+              {"It will track outbound links, email addresses clicks, and amount of downloads for common files (pdf, csv, docx, xlsx). Events will appear on your events page on simpleanalytics.com. (default: on) "}
+              <Link href="https://docs.simpleanalytics.com/automated-events">Learn more</Link>
+            </>
+          } />
       </Form>
 
       {hasSubmitted && <p>Your settings have been saved. You must trigger a new production deploy for the changes to take effect.</p>}
