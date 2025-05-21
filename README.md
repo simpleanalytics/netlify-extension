@@ -14,7 +14,6 @@ This builds the extension into a `.ntli` folder. This is the folder that Netlify
 npm run build
 ```
 
-
 ## Publish
 
 Are you ready to deploy and publish your extension? Check out our documentation on [publishing your extension](https://developers.netlify.com/sdk/publish/).
