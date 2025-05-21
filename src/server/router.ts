@@ -25,9 +25,9 @@ export const appRouter = router({
           });
         }
 
-        const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
+        const config = ((await client.getSiteConfiguration(teamId, siteId))?.config) as Partial<SiteSettings> | undefined;
 
-        return config.general;
+        return config?.general;
       }),
       mutate: procedure
           .input(generalSettingsSchema)
@@ -84,21 +84,6 @@ export const appRouter = router({
                   value: "false",
                 });
               }
-
-              if (input.enableProxy) {
-                await client.createOrUpdateVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
-                  value: "true",
-                });
-              } else {
-                await client.deleteEnvironmentVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
-                });
-              }
             } catch (e) {
               throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
@@ -124,12 +109,9 @@ export const appRouter = router({
           });
         }
 
-        const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
+        const config = ((await client.getSiteConfiguration(teamId, siteId))?.config) as Partial<SiteSettings> | undefined;
 
-        return {
-          ...config.events,
-          collectAutomatedEvents: config?.general?.collectAutomatedEvents,
-        };
+        return config?.events;
       }),
       mutate: procedure
         .input(eventSettingsSchema)
@@ -148,40 +130,12 @@ export const appRouter = router({
               });
             }
 
-            const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
-
-            const { collectAutomatedEvents, ...events } = input;
-
             await client.upsertSiteConfiguration(teamId, siteId, {
-              general: {
-                // Ensure we set the right defaults when the general settings aren't set
-                ...config.general ?? {
-                  enableAnalytics: false,
-                  enableProxy: false,
-                },
-                collectAutomatedEvents
-              },
-              events,
-              advanced: config.advanced
+              ...(await client.getSiteConfiguration(teamId, siteId))?.config ?? {},
+              events: input,
             });
       
             try {
-              if (input.collectAutomatedEvents) {
-                await client.deleteEnvironmentVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
-                });
-              }
-              else {
-                await client.createOrUpdateVariable({
-                  accountId: teamId,
-                  siteId,
-                  key: "SIMPLE_ANALYTICS_AUTO_COLLECT_EVENTS",
-                  value: "false",
-                });
-              }
-      
               if (input.collectDownloads && input.collectEmailClicks && input.collectOutboundLinks) {
                 await client.deleteEnvironmentVariable({
                   accountId: teamId,
@@ -284,9 +238,9 @@ export const appRouter = router({
           });
         }
 
-        const config = ((await client.getSiteConfiguration(teamId, siteId))?.config ?? {}) as Partial<SiteSettings>;
+        const config = ((await client.getSiteConfiguration(teamId, siteId))?.config) as Partial<SiteSettings> | undefined;
 
-        return config.advanced;
+        return config?.advanced;
       }),
       mutate: procedure
         .input(advancedSettingsSchema)
@@ -311,6 +265,21 @@ export const appRouter = router({
           });
   
           try {
+            if (input.enableProxy) {
+              await client.createOrUpdateVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
+                value: "true",
+              });
+            } else {
+              await client.deleteEnvironmentVariable({
+                accountId: teamId,
+                siteId,
+                key: "SIMPLE_ANALYTICS_PROXY_ENABLED",
+              });
+            }
+            
             if (!input.collectDoNotTrack) {
               await client.deleteEnvironmentVariable({
                 accountId: teamId,
